@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/app.dir/src/main.c.o CMakeFiles/app.dir/src/graphics.c.o -o app  libdisplay_lib.a libgraphics_math_lib.a librender_lib.a libmesh_lib.a /usr/lib/x86_64-linux-gnu/libSM.so /usr/lib/x86_64-linux-gnu/libICE.so /usr/lib/x86_64-linux-gnu/libX11.so /usr/lib/x86_64-linux-gnu/libXext.so -lXrandr -lm -lassimp 

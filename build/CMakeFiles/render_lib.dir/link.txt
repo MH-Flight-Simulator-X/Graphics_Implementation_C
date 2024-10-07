@@ -1,2 +1,0 @@
-/usr/bin/ar qc librender_lib.a CMakeFiles/render_lib.dir/lib/render/render.c.o CMakeFiles/render_lib.dir/lib/render/camera.c.o
-/usr/bin/ranlib librender_lib.a

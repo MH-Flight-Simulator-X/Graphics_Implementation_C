@@ -1,2 +1,0 @@
-/usr/bin/ar qc libgraphics_math_lib.a CMakeFiles/graphics_math_lib.dir/lib/graphics_math/graphics_math.c.o
-/usr/bin/ranlib libgraphics_math_lib.a

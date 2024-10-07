@@ -1,7 +1,0 @@
-/home/morten/dev/Graphics_Implementation_C/build/CMakeFiles/app.dir
-/home/morten/dev/Graphics_Implementation_C/build/CMakeFiles/render_lib.dir
-/home/morten/dev/Graphics_Implementation_C/build/CMakeFiles/graphics_math_lib.dir
-/home/morten/dev/Graphics_Implementation_C/build/CMakeFiles/display_lib.dir
-/home/morten/dev/Graphics_Implementation_C/build/CMakeFiles/mesh_lib.dir
-/home/morten/dev/Graphics_Implementation_C/build/CMakeFiles/edit_cache.dir
-/home/morten/dev/Graphics_Implementation_C/build/CMakeFiles/rebuild_cache.dir
