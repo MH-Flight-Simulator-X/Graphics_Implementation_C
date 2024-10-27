@@ -1,3 +1,0 @@
-/home/morten/dev/Graphics_Implementation_C/validation/CMakeFiles/val.dir
-/home/morten/dev/Graphics_Implementation_C/validation/CMakeFiles/edit_cache.dir
-/home/morten/dev/Graphics_Implementation_C/validation/CMakeFiles/rebuild_cache.dir
