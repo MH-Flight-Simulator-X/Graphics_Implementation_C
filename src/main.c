@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <cglm/cglm.h>
+
 #include "display.h"
 #include "render.h"
 #include "mesh.h"
@@ -9,11 +11,11 @@
 
 // Matrix data is a 1d array of 16 floats
 void print_matrix(mat4 matrix) {
-    for (int i = 0; i < 16; i++) {
-        printf("%f ", matrix.m[i]);
-        if ((i + 1) % 4 == 0) {
-            printf("\n");
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            printf("%f ", matrix[i][j]);
         }
+        printf("\n");
     }
     printf("\n");
 }
@@ -46,17 +48,19 @@ int main() {
 
     float fov = 90.0f;
 
-    vec3 camera_pos = {0.0f, -3.25f, -6.5f};
+    vec3 camera_pos = {0.0f, 0, 3.0f};
     vec3 world_up = {0.0f, 1.0f, 0.0f};
     camera_set_config(rc.camera, camera_pos, world_up, pitch, yaw, fov, zfar, znear);
 
-    // Print camera forward vector
-    printf("Camera forward vector: %f %f %f\n", rc.camera->forward.x, rc.camera->forward.y, rc.camera->forward.z);
 
     // Load mesh
     Model_t model;
     char model_path[] = "../assets/airplane.obj";
     model_init(&model, model_path);
+
+    model.position[0] = 0.0f;
+    model.position[1] = 0.0f;
+    model.position[2] = 0.0f;
 
     printf("LOG: Loaded model from path: %s. Vertex count: %d\n", model_path, model.mesh.vertex_count);
 
@@ -69,33 +73,47 @@ int main() {
 
 
         // Scale model
-        float scale = 0.004f;
-        mat4 scale_matrix = mat4_scale(scale, scale, scale);
-
+        vec3 scale = {0.004f, 0.004f, 0.004f};
+        mat4 scale_matrix;
+        glm_scale_make(scale_matrix, scale);
+        
         // Rotate model
-        // model.rotation.x += 0.05f;
-        model.rotation.y += 0.1f;
-
-        mat4 identity = mat4_identity();
-        mat4 rotation_matrix = mat4_rotate(radians(model.rotation.x), radians(model.rotation.y), radians(model.rotation.z)); 
+        model.rotation[1] += 0.01f;
+        vec3 y_axis = {0.0f, 1.0f, 0.0f};
+        mat4 rotation_matrix;
+        glm_rotate_make(rotation_matrix, model.rotation[1], y_axis);
 
         // Translate model
-        model.position.z = 25.0f;
-        mat4 translation_matrix = mat4_translate(model.position.x, model.position.y, model.position.z);
+        mat4 translation_matrix;
+        glm_mat4_identity(translation_matrix);
+        glm_translate_make(translation_matrix, model.position); 
 
         // Calculate model matrix
-        mat4 model_matrix = mat4_mat4_mul_ret(&rotation_matrix, &scale_matrix);
-        model.model_matrix = mat4_mat4_mul_ret(&translation_matrix, &model_matrix);
+        mat4 model_matrix;
+        glm_mat4_mul(rotation_matrix, scale_matrix, model_matrix);
+        glm_mat4_mul(translation_matrix, model_matrix, model.model_matrix);
+
+        // Rotate camera around y axis 
+        // rc.camera->pitch = 45;
 
         // Update camera
-        // rc.camera->pitch = sin(t) * 1.75f;
-        rc.camera->position.y = sin(t) * 1.0f;
         camera_update_vectors(rc.camera);
         camera_update_view(rc.camera);
 
-        // Print view matrix for debugging
-        printf("View matrix:\n");
-        print_matrix(rc.camera->view_matrix);
+        // // Print camera vectors
+        // printf("Camera position: %f %f %f\n", rc.camera->position[0], rc.camera->position[1], rc.camera->position[2]);
+        // printf("Camera forward: %f %f %f\n", rc.camera->forward[0], rc.camera->forward[1], rc.camera->forward[2]);
+        // printf("Camera right: %f %f %f\n", rc.camera->right[0], rc.camera->right[1], rc.camera->right[2]);
+        // printf("Camera up: %f %f %f\n", rc.camera->up[0], rc.camera->up[1], rc.camera->up[2]);
+        //
+        // // Print projection matrix
+        // printf("Projection matrix:\n");
+        // print_matrix(rc.camera->projection_matrix);
+        //
+        // // Print view matrix
+        // printf("View matrix:\n");
+        // print_matrix(rc.camera->view_matrix);
+
 
         start = clock();
         graphics_render_model(&rc, &model);

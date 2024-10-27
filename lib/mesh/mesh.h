@@ -7,7 +7,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/vector3.h>
 
-#include "../graphics_math/graphics_math.h"
+#include <cglm/cglm.h>
 
 typedef struct {
     vec3 v[3];

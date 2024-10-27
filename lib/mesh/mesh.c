@@ -25,11 +25,9 @@ void model_init(Model_t* model, const char* path) {
     int index_offset = 0;
     for (int i = 0; i < scene->mNumMeshes; i++) {
         for (int j = 0; j < scene->mMeshes[i]->mNumVertices; j++) {
-            model->mesh.vertices[vertex_offset + j] = (vec3){
-                scene->mMeshes[i]->mVertices[j].x,
-                scene->mMeshes[i]->mVertices[j].y,
-                scene->mMeshes[i]->mVertices[j].z
-            };
+            model->mesh.vertices[vertex_offset + j][0] = scene->mMeshes[i]->mVertices[j].x;
+            model->mesh.vertices[vertex_offset + j][1] = scene->mMeshes[i]->mVertices[j].y;
+            model->mesh.vertices[vertex_offset + j][2] = scene->mMeshes[i]->mVertices[j].z;
         }
 
         for (int j = 0; j < scene->mMeshes[i]->mNumFaces; j++) {

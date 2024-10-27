@@ -1,5 +1,5 @@
 #pragma once
-#include "../graphics_math/graphics_math.h"
+#include <cglm/cglm.h>
 
 typedef struct {
     float zfar, znear;

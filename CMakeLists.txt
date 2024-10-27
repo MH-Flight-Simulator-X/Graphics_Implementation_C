@@ -13,6 +13,17 @@ add_executable(
     src/graphics.c
 )
 
+# cglm using FetchContent
+include(FetchContent)
+FetchContent_Declare(
+    cglm
+    GIT_REPOSITORY
+    https://github.com/recp/cglm.git
+    GIT_TAG
+    master
+)
+FetchContent_MakeAvailable(cglm)
+
 # Library files
 add_library(
     render_lib 
@@ -20,11 +31,7 @@ add_library(
     lib/render/camera.c
 )
 
-add_library(
-    graphics_math_lib lib/graphics_math/graphics_math.c
-)
-target_link_libraries(graphics_math_lib PRIVATE m)
-
+# Link libraries
 add_library(
     display_lib lib/display/display.c
 )
@@ -34,14 +41,11 @@ target_include_directories(display_lib PUBLIC ${X11_INCLUDE_DIR})
 add_library(
     mesh_lib lib/mesh/mesh.c
 )
-target_link_libraries(mesh_lib PRIVATE assimp)
+target_link_libraries(mesh_lib PRIVATE assimp cglm)
+target_link_libraries(render_lib PRIVATE cglm mesh_lib)
 
-target_include_directories(render_lib PUBLIC
-    lib/graphics_math
-)
-
+# Include directories
 target_include_directories(app PUBLIC
-    lib/graphics_math
     lib/render
     lib/display
     lib/mesh
@@ -55,4 +59,4 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -DNDEBUG")
 endif()
 
-target_link_libraries(app PRIVATE display_lib graphics_math_lib render_lib mesh_lib)
+target_link_libraries(app PRIVATE m cglm display_lib render_lib mesh_lib)

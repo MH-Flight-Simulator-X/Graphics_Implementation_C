@@ -1,55 +1,74 @@
 #include "camera.h"
+#include "cglm/vec3.h"
 
 void camera_init(Camera_t* camera, vec2 resolution) {
-    camera->position = (vec3){0.0f, 0.0f, 0.0f};
+    // Initialize camera
+    glm_vec3_zero(camera->position);
     camera->pitch = 0.0f;
     camera->yaw = 0.0f;
 
-    camera->forward = (vec3){0.0f, 0.0f, 0.0f};
-    camera->right = (vec3){0.0f, 0.0f, 0.0f};
-    camera->up = (vec3){0.0f, 0.0f, 0.0f};
-    camera->world_up = (vec3){0.0f, 1.0f, 0.0f};
+    // Initialize vectors
+    glm_vec3_zero(camera->forward);
+    glm_vec3_zero(camera->right);
+    glm_vec3_zero(camera->up);
+    glm_vec3_zero(camera->world_up);
+    camera->world_up[1] = 1.0f;
+
 
     camera->fov = 90.0f;
-    camera->resolution = resolution;
+    camera->resolution[0] = resolution[0];
+    camera->resolution[1] = resolution[1];
 
-    camera->view_matrix = mat4_identity();
-    camera->projection_matrix = mat4_identity();
+    glm_mat4_identity(camera->view_matrix);
+    glm_mat4_identity(camera->projection_matrix);
 }
 
 void camera_set_config(Camera_t* camera, vec3 pos, vec3 world_up, float pitch, float yaw, float fov, float zfar, float znear) {
-    camera->position = pos;
-    camera->world_up = world_up;
+    // Set the camera configuration
+    glm_vec3_copy(pos, camera->position);
+    glm_vec3_copy(world_up, camera->world_up);
     camera->fov = fov;
     camera->yaw = yaw;
     camera->pitch = pitch;
+    camera->zfar = zfar;
+    camera->znear = znear;
 
+    // Calculate the forward vector
     vec3 forward;
-    forward.x = cos(radians(yaw)) * cos(radians(pitch));
-    forward.y = sin(radians(pitch));
-    forward.z = sin(radians(yaw)) * cos(radians(pitch));
-    camera->forward = vec3_normalize(&forward);
+    forward[0] = cos(glm_rad(yaw)) * cos(glm_rad(pitch));
+    forward[1] = sin(glm_rad(pitch));
+    forward[2] = sin(glm_rad(yaw)) * cos(glm_rad(pitch));
+    glm_vec3_normalize_to(forward, camera->forward);
 
-    camera->projection_matrix = mat4_perspective(radians(fov), camera->resolution.x / camera->resolution.y, 0.1f, 100.0f);
+    // Set up the projection matrix
+    glm_perspective(glm_rad(fov), camera->resolution[0] / camera->resolution[1], znear, zfar, camera->projection_matrix);
+    printf("fov: %f aspect: %f znear: %f zfar: %f\n", fov, camera->resolution[0] / camera->resolution[1], znear, zfar);
+
+    // Update the camera vectors
     camera_update_vectors(camera);
     camera_update_view(camera);
 }
 
 void camera_update_vectors(Camera_t* camera) {
     vec3 forward;
-    forward.x = cos(radians(camera->yaw)) * cos(radians(camera->pitch));
-    forward.y = sin(radians(camera->pitch));
-    forward.z = sin(radians(camera->yaw)) * cos(radians(camera->pitch));
-    camera->forward = vec3_normalize(&forward);
+    forward[0] = cos(glm_rad(camera->yaw)) * cos(glm_rad(camera->pitch));
+    forward[1] = sin(glm_rad(camera->pitch));
+    forward[2] = sin(glm_rad(camera->yaw)) * cos(glm_rad(camera->pitch));
+    glm_vec3_normalize_to(forward, camera->forward);
 
-    vec3 right = vec3_cross(&camera->forward, &camera->world_up);
-    camera->right = vec3_normalize(&right);
+    printf("Camera forward: %f %f %f\n", camera->forward[0], camera->forward[1], camera->forward[2]);
 
-    vec3 up = vec3_cross(&camera->right, &camera->forward);
-    camera->up = vec3_normalize(&up);
+    vec3 right;
+    glm_vec3_cross(camera->forward, camera->world_up, right);
+    glm_vec3_normalize_to(right, camera->right);
+
+    vec3 up;
+    glm_vec3_cross(camera->right, camera->forward, up);
+    glm_vec3_normalize_to(up, camera->up);
 }
 
 void camera_update_view(Camera_t* camera) {
-    vec3 center = vec3_add(&camera->position, &camera->forward);
-    camera->view_matrix = mat4_lookAt(camera->position, center, camera->up);
+    vec3 center;
+    glm_vec3_add(camera->position, camera->forward, center);
+    glm_lookat(camera->position, center, camera->up, camera->view_matrix);
 }

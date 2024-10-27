@@ -1,5 +1,5 @@
 #pragma once
-#include "graphics_math.h"
+#include <cglm/cglm.h>
 #include "render.h"
 #include "mesh.h"
 
